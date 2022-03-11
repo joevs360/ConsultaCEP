@@ -1,0 +1,186 @@
+<html>
+ <head>
+  <Title>Consulta CEP!</Title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+ </head>
+ <body style="background-color: #F3F5F0;">
+   <script>
+     function verificarNumero(str){
+	   var e = /^[0-9]+$/;
+	   return (e.test(str));
+	 }
+     function configCEP1(){
+	    var cep1 = document.getElementById("cep1");
+	    var cep2 = document.getElementById("cep2");
+		//Só permite numero 
+		if(!verificarNumero(cep1.value)){
+		   var text = cep1.value.substring(0,cep1.value.length-1);
+		   cep1.value = text;
+		}
+		
+		//Vai para o proximo
+	    if(cep1.value.length == 5){
+		  cep2.select();
+		}
+	 }
+	 function configCEP2(){
+	    var cep2 = document.getElementById("cep2");
+		//Só numero
+		if(!verificarNumero(cep2.value)){
+		  var text = cep2.value.substring(0, cep2.value.length-1);
+		  cep2.value = text;
+		}
+		
+		if(cep2.value.length == 3){
+		  validaCEP();
+		}
+		
+	 }
+	 function validaCEP(){
+	    var cep1 = document.getElementById("cep1");
+		var cep2 = document.getElementById("cep2");
+		if(cep2.value.length == 3 && cep1.value.length == 5){
+		  var cep = cep1.value + cep2.value;
+		  //Validar cep
+		  var vcep = /^[0-9]{8}$/;
+		  if(vcep.test(cep)){
+		   buscarCEP(cep);
+		  }
+		  else{
+		    alert("CEP invalido!");
+			cep1.value = "";
+			cep2.value = "";
+			cep1.select();
+		  }
+		}
+	 }
+	 function buscarCEP(cep){
+
+	   var rua = document.getElementById("logradouro");
+	   var bairro = document.getElementById("bairro");
+	   var cidade = document.getElementById("cidade");
+	   var uf = document.getElementById("uf");
+	   
+	   document.getElementById("btnBuscar").disabled = true;
+	   document.getElementById("cep1").disabled = true;
+	   document.getElementById("cep2").disabled = true;
+	   
+	   //Cria elemento javascript
+	   var script = document.createElement("script");
+	   
+	   //Sincroniza callback
+	   script.src = "https://viacep.com.br/ws/"+ cep + "/json/?callback=PrencherCampos";
+	   
+	   
+	   document.body.appendChild(script);
+	   
+	  
+	 }
+	 
+	 function PrencherCampos(conteudo) {
+        if (!("erro" in conteudo)) {
+            //Atualiza os campos com os valores.
+            document.getElementById('logradouro').value=(conteudo.logradouro);
+            document.getElementById('bairro').value=(conteudo.bairro);
+            document.getElementById('cidade').value=(conteudo.localidade);
+            document.getElementById('uf').value=(conteudo.uf);
+        } 
+        else {
+            //CEP não Encontrado.
+            limpar();
+            alert("CEP não encontrado.");
+        }
+		
+		 document.getElementById("btnBuscar").disabled  = false;
+	     document.getElementById("cep1").disabled  = false;
+	     document.getElementById("cep2").disabled = false;
+	  
+      }
+	  function limpar(){
+	    document.getElementById('logradouro').value="";
+        document.getElementById('bairro').value="";
+        document.getElementById('cidade').value="";
+		document.getElementById("cep1").value="";
+	    document.getElementById("cep2").value="";
+	  }
+	
+   </script>
+   <style>
+    .container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .box {
+      width: 512px;
+      background: #fff;
+    }
+    body {
+     margin: 0px;
+    }
+   </style>
+   <div class="container "  >
+    <div class="box mb-4 shadow-sm"> 
+	 <form action="buscarCep();" style="margin: 15px;">
+     <div class="form-group"  >
+	    <label for="cep">CEP</label><br>
+		<input type="text" maxlength="5" id="cep1" style="width:55px;" onkeyup="configCEP1()" /> -
+		<input type="text" maxlength="3" id="cep2" style="width:35px;" onkeyup="configCEP2()" />
+		<button type="button" onclick="validaCEP()"  id="btnBuscar" class="btn btn-primary">Buscar</button>
+	 </div>
+	 <div class="form-group">
+	    <label for="logradouro">Logradouro</label><br>
+		<input type="text" id="logradouro" class="form-control"/>
+	 </div>
+	 <div class="form-group">
+	    <label for="bairro">Bairro</label><br>
+		<input type="text" id="bairro" class="form-control"/>
+	 </div>
+	 <div class="form-group">
+	    <label for="cidade">Cidade</label><br>
+		<input type="text" id="cidade" class="form-control"/>
+	 </div>
+	 <div class="form-group"">
+	    <label for="uf">Estado</label><br>
+		<select id="uf" name="uf" class="form-control" >
+          <option value="AC">Acre</option>
+          <option value="AL">Alagoas</option>
+          <option value="AP">Amapá</option>
+          <option value="AM">Amazonas</option>
+          <option value="BA">Bahia</option>
+          <option value="CE">Ceará</option>
+          <option value="DF">Distrito Federal</option>
+          <option value="ES">Espírito Santo</option>
+          <option value="GO">Goiás</option>
+          <option value="MA">Maranhão</option>
+          <option value="MT">Mato Grosso</option>
+          <option value="MS">Mato Grosso do Sul</option>
+          <option value="MG">Minas Gerais</option>
+          <option value="PA">Pará</option>
+          <option value="PB">Paraíba</option>
+          <option value="PR">Paraná</option>
+          <option value="PE">Pernambuco</option>
+          <option value="PI">Piauí</option>
+          <option value="RJ">Rio de Janeiro</option>
+          <option value="RN">Rio Grande do Norte</option>
+          <option value="RS">Rio Grande do Sul</option>
+          <option value="RO">Rondônia</option>
+          <option value="RR">Roraima</option>
+          <option value="SC">Santa Catarina</option>
+          <option value="SP">São Paulo</option>
+          <option value="SE">Sergipe</option>
+          <option value="TO">Tocantins</option>
+          <option value="EX">Estrangeiro</option>
+        </select>
+	 </div>
+    </form>
+	</div>
+   
+
+    </div>
+   </body>
+</html>
