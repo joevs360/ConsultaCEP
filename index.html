@@ -7,17 +7,13 @@
  <body style="background-color: #F3F5F0;">
    <script>
      function verificarNumero(str){
-	   var e = /^[0-9]+$/;
-	   return (e.test(str));
+	    return str.replaceAll(/[^0-9]/g,'')
 	 }
      function configCEP1(){
 	    var cep1 = document.getElementById("cep1");
 	    var cep2 = document.getElementById("cep2");
-		//Só permite numero 
-		if(!verificarNumero(cep1.value)){
-		   var text = cep1.value.substring(0,cep1.value.length-1);
-		   cep1.value = text;
-		}
+		//Só permitir numero 
+		cep1.value = verificarNumero(cep1.value);
 		
 		//Vai para o proximo
 	    if(cep1.value.length == 5){
@@ -26,11 +22,8 @@
 	 }
 	 function configCEP2(){
 	    var cep2 = document.getElementById("cep2");
-		//Só numero
-		if(!verificarNumero(cep2.value)){
-		  var text = cep2.value.substring(0, cep2.value.length-1);
-		  cep2.value = text;
-		}
+		//Permitir somente numero
+		cep2.value = verificarNumero(cep2.value);
 		
 		if(cep2.value.length == 3){
 		  validaCEP();
@@ -65,6 +58,7 @@
 	   document.getElementById("btnBuscar").disabled = true;
 	   document.getElementById("cep1").disabled = true;
 	   document.getElementById("cep2").disabled = true;
+	   document.getElementById("btnBuscar").innerHTML = "Carregando...";
 	   
 	   //Cria elemento javascript
 	   var script = document.createElement("script");
@@ -72,22 +66,19 @@
 	   //Sincroniza callback
 	   script.src = "https://viacep.com.br/ws/"+ cep + "/json/?callback=PrencherCampos";
 	   
-	   
 	   document.body.appendChild(script);
-	   
-	  
 	 }
 	 
 	 function PrencherCampos(conteudo) {
         if (!("erro" in conteudo)) {
-            //Atualiza os campos com os valores.
+            //Prenche os campos se estiver tudo ok
             document.getElementById('logradouro').value=(conteudo.logradouro);
             document.getElementById('bairro').value=(conteudo.bairro);
             document.getElementById('cidade').value=(conteudo.localidade);
             document.getElementById('uf').value=(conteudo.uf);
         } 
         else {
-            //CEP não Encontrado.
+            //Caso o cep não seja encontrado
             limpar();
             alert("CEP não encontrado.");
         }
@@ -95,6 +86,7 @@
 		 document.getElementById("btnBuscar").disabled  = false;
 	     document.getElementById("cep1").disabled  = false;
 	     document.getElementById("cep2").disabled = false;
+		 document.getElementById("btnBuscar").innerHTML="Buscar";
 	  
       }
 	  function limpar(){
